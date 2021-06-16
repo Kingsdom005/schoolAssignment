@@ -1,0 +1,280 @@
+#include <iostream>
+#include <cstring>
+#include <algorithm>
+#define ll long long
+using namespace std;
+
+struct students
+{
+    //char num[15];
+    ll num;
+    char name[15];
+    double scores[7];
+    double sum_scores;
+    double average_scores;
+}stu[35];
+
+void input_info(int num_scores,int num_students)
+{
+    double sum=0;
+    printf("请依次输入学号、姓名、各科成绩\n");
+    for(int i=1;i<=num_students;i++)
+    {
+        cin>>stu[i].num>>stu[i].name;
+        for(int j=1;j<=num_scores;j++)
+        {
+            cin>>stu[i].scores[j];
+            sum+=stu[i].scores[j];
+        }
+        stu[i].sum_scores=sum;
+        sum/=num_scores;
+        stu[i].average_scores=sum;
+        sum=0;
+    }  
+}
+void calc_stu_sum(int num_scores,int num_students)
+{
+    double sum=0;
+    for(int i=1;i<=num_students;i++)
+    {    
+        for(int j=1;j<=num_scores;j++)
+        {
+            sum+=stu[i].scores[j];
+        }
+        stu[i].sum_scores=sum;
+        sum/=num_scores;
+        stu[i].average_scores=sum;
+        sum=0;
+    }  
+}
+void calc_sum(int num_scores,int num_students,int n)
+{
+    double sum=0;
+    for(int i=1;i<=num_students;i++)
+    {    
+        sum+=stu[i].scores[n];
+    }  
+    printf("第%d门课总分为%.2lf,平均分为%.2lf\n",n,sum,sum*1.0/num_students);
+}
+void show_stu_info(int num_scores,int num_students)
+{
+    printf("请查看基本信息及各科成绩:\n");
+    for(int i=1;i<=num_students;i++)
+    {
+        //cout<<stu[i].num<<" "<<stu[i].name<<" ";
+        printf("%-12lld%-9s",stu[i].num,stu[i].name);
+        for(int j=1;j<=num_scores;j++)
+        {
+            //cout<<stu[i].scores[j]<<" ";
+            printf("%-8.2lf",stu[i].scores[j]);
+        }
+        //cout<<stu[i].sum_scores<<" "<<stu[i].average_scores<<endl;
+        printf("%-8.2lf%-8.2lf",stu[i].sum_scores,stu[i].average_scores);
+        cout<<endl;
+    }
+}
+
+int search_num(int num_scores,int num_students)
+{
+    int flag=0;
+    ll num_in;
+    cout<<"请输入查询学号"<<endl;
+    scanf("%lld",&num_in);
+    for(int i=1;i<=num_students;i++)
+    {
+        if(stu[i].num==num_in)
+        {
+            flag = i;
+            break;
+        }
+    }
+    if(!flag)
+    {
+        cout<<"没有此人！！"<<endl;
+        return 0 ;
+    }
+    printf("查询结果如下:\n");
+    printf("%-3d%-12lld%-9s",flag,stu[flag].num,stu[flag].name);
+    for(int j=1;j<=num_scores;j++)
+    {   
+        printf("%-8.2lf",stu[flag].scores[j]);
+    }  
+    printf("%-8.2lf%-8.2lf",stu[flag].sum_scores,stu[flag].average_scores);
+    cout<<endl;
+}
+
+int search_name(int num_scores,int num_students)
+{
+    int flag=0;
+    char name_in[15];
+    cout<<"请输入查询姓名"<<endl;
+    scanf("%s",name_in);
+    for(int i=1;i<=num_students;i++)
+    {
+        for(int j=0;j<strlen(name_in);j++)
+        {
+            if(stu[i].name[j]!=name_in[j])
+            {
+                break;
+            }
+            if(j==strlen(name_in)-1) 
+            {
+                flag = i;
+                break;
+            }
+        }
+        if(flag) break;
+    }
+    if(!flag)
+    {
+        cout<<"没有此人！！"<<endl;
+        return 0 ;
+    }
+    printf("查询结果如下:\n");
+    printf("%-3d%-12lld%-9s",flag,stu[flag].num,stu[flag].name);
+    for(int j=1;j<=num_scores;j++)
+    {   
+        printf("%-8.2lf",stu[flag].scores[j]);
+    }  
+    printf("%-8.2lf%-8.2lf",stu[flag].sum_scores,stu[flag].average_scores);
+    cout<<endl;
+}
+int cmp_sum_scores(const students a,const students b)
+{
+    return a.sum_scores > b.sum_scores ;
+}
+
+int cmp_num(const students a,const students b)
+{
+    return a.num < b.num ;
+}
+
+int cmp_name(const students a,const students b)
+{
+    int str1 = strlen(a.name),str2 = strlen(b.name);
+    int t = max(str1,str2);
+    for(int i=0;i<t;i++)
+    {
+        if(a.name[i]==b.name[i]) continue;
+        else return a.name[i] < b.name[i];
+    }    
+    
+}
+void show_info()
+{
+    printf("Please make your choice!!\n");
+    printf("1.Input record\n");	
+    printf("2.Caculate total and average score of every course\n");
+    printf("3.Caculate total and average score of every student\n");
+    printf("4.Sort in descending order by total score of every student\n");
+    printf("5.Sort in ascending order by number\n");
+    printf("6.Sort in dictionary order by name\n");
+    printf("7.Search by number\n");
+    printf("8.Search by name\n");
+    printf("9.Statistic analysis for every course\n");
+    printf("10.List record \n");
+    printf("0.Exit\n");
+}
+void statistics(int num_scores,int num_students,int n)
+{
+    int l1=0,l2=0,l3=0,l4=0,l5=0;
+
+    for(int i=1;i<=num_students;i++)
+    {
+        if(stu[i].scores[n]>=90) l1++;
+        else if(stu[i].scores[n]>=80) l2++;
+        else if(stu[i].scores[n]>=70) l3++;
+        else if(stu[i].scores[n]>=60) l4++;
+        else l5++;
+    }
+    printf("第%d科成绩:\n",n);
+    printf("优秀  良好  中等  及格  不及格\n");
+    printf("%-6d%-6d%-6d%-6d%-6d\n",l1,l2,l3,l4,l5);
+    printf("%-6.2lf%-6.2lf%-6.2lf%-6.2lf%-6.2lf\n",l1*1.0/num_students,l2*1.0/num_students,l3*1.0/num_students,l4*1.0/num_students,l5*1.0/num_students);
+}
+int main()
+{
+    int num_scores,num_students;
+    printf("请分别输入考试门数和学生人数\n");
+    cin>>num_scores>>num_students;
+    int op;
+    show_info();
+    while(cin>>op)
+    {       
+        //输入及显示输入信息
+        if(op==1)
+        {
+            input_info(num_scores,num_students);
+            //show_stu_info(num_scores,num_students);
+        }
+        //计算每门课成绩
+        else if(op==2)
+        {
+            for(int i=1;i<=num_scores;i++)
+            {
+                calc_sum(num_scores,num_students,i);
+            }
+            
+        }
+        //计算学生成绩
+        else if(op==3)
+        {
+            calc_stu_sum(num_scores,num_students);
+            printf("已成功计算！！\n");
+        }
+        //按照成绩排名
+        else if(op==4)
+        {
+            sort(stu+1,stu+num_students+1,cmp_sum_scores);
+            show_stu_info(num_scores,num_students);
+        }
+        //按照学号排名
+        else if(op==5)
+        {
+            sort(stu+1,stu+num_students+1,cmp_num);
+            show_stu_info(num_scores,num_students);
+        }
+        //按照姓名排名
+        else if(op==6)
+        {
+            sort(stu+1,stu+num_students+1,cmp_name);
+            show_stu_info(num_scores,num_students);
+        }
+        //按照学号查询
+        else if(op==7)
+        {
+            sort(stu+1,stu+num_students+1,cmp_sum_scores);
+            search_num(num_scores,num_students);
+            //show_stu_info(num_scores,num_students);
+        }
+        //按照姓名查询
+        else if(op==8)
+        {
+            sort(stu+1,stu+num_students+1,cmp_sum_scores);
+            search_name(num_scores,num_students);
+        }
+        //统计数据
+        else if(op==9)
+        {
+            for(int i=1;i<=num_scores;i++)
+            {
+                statistics(num_scores,num_students,i);
+            }
+        }
+        //显示成绩
+        else if(op==10)
+        {
+            show_stu_info(num_scores,num_students);
+        }
+        //退出
+        else if(op==0)
+        {
+            printf("Exit succuss!!");
+            break;
+        }
+        //报错提醒
+        else printf("Please input legal choice!!\n");
+        show_info();
+    }
+    return 0;
+}
